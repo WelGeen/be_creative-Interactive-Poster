@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Be Creative</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="layer0"><video id="videoBg" autoplay muted playsinline></video></div>
+  <div id="layer1"></div>
+  <div id="layer2">
+    <div class="top-text">Be CREATIVE!</div> 
+    <div class="top-sub-text">JOIN our Creative Coding Workshop</div>
+    <div class="bottom-text">Every Monday afternoon at TQ4.2 mail p.wels@fontys.nl || c.geene@fontys.nl</div>
+    <div class="bottom-sub-text">by welgeen.nl</div>
+  </div>
+  <div id="bottom-logo"></div>
+
+  <div id="bottom-hand">
+  </div>
+ <select id="cameraSelect"></select>
+ 
+  <div id="handCursor">
+    <div class="ripple"></div>
+    <div class="ripple"></div>
+    <div class="ripple"></div>
+  </div>
+
+  <!-- External Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils"></script>
+  <script src="tiles.js"></script>
+  <script src="handtrack.js"></script>
+</body>
+</html>

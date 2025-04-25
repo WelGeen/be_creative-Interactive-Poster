@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vierkanten met Woorden</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body, html { width: 100vw; height: 100vh; overflow: hidden; background: black; position: relative; }
+
+    #layer0 {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 0;
+    }
+
+    #videoBg {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: grayscale(100%) brightness(0.5);
+      transform: scaleX(-1); /* spiegelbeeld */
+    }
+
+    #layer1 {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: black;
+      mix-blend-mode: overlay;
+      z-index: 1;
+    }
+
+    .square {
+      position: absolute;
+      background-color: white;
+      animation: dropSquare 10s linear forwards;
+    }
+
+    @keyframes dropSquare {
+      0% { transform: translateY(0); opacity: 1; }
+      100% { transform: translateY(100vh); opacity: 1; }
+    }
+
+    .word {
+      position: absolute;
+      color: white;
+      font-family: sans-serif;
+      animation: moveWord 1.5s ease-out forwards;
+      pointer-events: none;
+    }
+
+    @keyframes moveWord {
+      0% { transform: translateX(0); opacity: 1; }
+      100% { transform: translateX(var(--dir)); opacity: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div id="layer0">
+    <video id="videoBg" autoplay muted playsinline></video>
+  </div>
+  <div id="layer1"></div>
+
+  <script>
+    const video = document.getElementById('videoBg');
+    navigator.mediaDevices.getUserMedia({ video: true })
+      .then(stream => {
+        video.srcObject = stream;
+      })
+      .catch(err => console.error("Camera toegang geweigerd:", err));
+
+    const layer = document.getElementById('layer1');
+    const words = ["code", "design", "pixels", "layout", "square", "effect", "scroll", "black"];
+    const screenW = window.innerWidth;
+    const screenH = window.innerHeight;
+
+    function createSquare() {
+      const sizeVW = Math.random() * 15 + 1;
+      const size = (sizeVW / 100) * screenW;
+      const xOffset = screenW / 2 + (Math.random() * 0.2 - 0.1) * screenW;
+
+      const square = document.createElement('div');
+      square.className = 'square';
+      square.style.width = size + 'px';
+      square.style.height = size + 'px';
+      square.style.left = (xOffset - size / 2) + 'px';
+      square.style.top = '0px';
+
+      square.addEventListener('mouseenter', () => {
+        const word = document.createElement('div');
+        word.className = 'word';
+        word.innerText = words[Math.floor(Math.random() * words.length)];
+
+        const direction = Math.random() > 0.5 ? '200px' : '-200px';
+        word.style.setProperty('--dir', direction);
+        word.style.left = square.style.left;
+        word.style.top = square.getBoundingClientRect().top + 'px';
+
+        layer.appendChild(word);
+
+        word.addEventListener('animationend', () => {
+          word.remove();
+        });
+      });
+
+      square.addEventListener('animationend', () => {
+        square.remove();
+        createSquare();
+      });
+
+      layer.appendChild(square);
+    }
+
+    for (let i = 0; i < 30; i++) {
+      setTimeout(createSquare, i * 400);
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Vierkanten met Woorden</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body, html { width: 100vw; height: 100vh; overflow: hidden; background: black; position: relative; }
+
+    #layer0 {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 0;
+    }
+
+    #videoBg {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: grayscale(100%) brightness(0.5);
+      transform: scaleX(-1);
+    }
+
+    #layer1 {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: black;
+      mix-blend-mode: overlay;
+      z-index: 1;
+    }
+	#layer2 {
+	  position: absolute;
+	  top: 0;
+	  left: 0;
+	  width: 100vw;
+	  height: 100vh;
+	  z-index: 2;
+	  color: white;
+	  pointer-events: none; /* zodat je eventueel nog dingen onder deze laag kunt aanklikken */
+	  font-family: sans-serif;
+	}
+
+	.top-text {
+	  position: absolute;
+	  top: 5vh;
+	  left: 50%;
+	  transform: translateX(-50%);
+	  font-size: 12vw;
+	  font-weight: bold;
+	  text-align: center;
+	  opacity: 0.8;
+	  width: 100%;
+	  text-transform: uppercase;
+	  line-height: 1.2;
+	  letter-spacing: 2px;
+	}
+	.top-sub-text {
+	  position: absolute;
+	  top: 14vh;
+	  left: 50%;
+	  transform: translateX(-50%);
+	  font-size: 1.5vw;
+	  text-align: center;
+	  opacity: 0.6;
+	  width: 100%;
+	  text-transform: uppercase;
+	  line-height: 1.2;
+	  letter-spacing: 2px;
+	}
+	
+	.bottom-text {
+	  position: absolute;
+	  bottom: 3vh;
+	  left: 50%;
+	  transform: translateX(-50%);
+	  font-size: 2vw;
+	  text-align: center;
+	  opacity: 0.6;
+	  width: 52%;
+	  line-height: 1.6;
+	  letter-spacing: 3px;
+	}
+	.bottom-sub-text {
+	  position: absolute;
+	  bottom: 2.5vh;
+	  left: 91%;
+	  transform: translateX(-50%);
+	  font-size: 1vw;
+	  text-align: center;
+	  opacity: 0.8;
+	  width: 52%;
+	  letter-spacing: 2px;
+	}
+	#bottom-logo {
+	  position: absolute;
+	  bottom: 4vh;
+	  left: 80%;
+	  width: 21%;
+	  height: auto;
+	  aspect-ratio: 3 / 1;
+	  background-image: url('fontys-39-logo-black-and-white.png');
+	  background-size: contain;
+	  background-repeat: no-repeat;
+	  background-position: center;
+	  opacity: 0.7;
+	}
+	#bottom-hand {
+	  position: absolute;
+	  bottom: 4vh;
+	  left: 2%;
+	  width: 21%;
+	  height: auto;
+	  aspect-ratio: 3 / 1;
+	  background-image: url('waving-hand-svgrepo-com.svg');
+	  background-size: contain;
+	  background-repeat: no-repeat;
+	  background-position: center;
+	  opacity: 0.7;
+	}
+	
+    .square {
+      position: absolute;
+      background-color: white;
+      animation: dropSquare 10s linear forwards;
+    }
+
+    @keyframes dropSquare {
+      0% { transform: translateY(0); opacity: 1; }
+      100% { transform: translateY(100vh); opacity: 0.4; }
+    }
+   .word {
+      position: absolute;
+      color: white;
+      font-family: sans-serif;
+      animation: moveWord 4s ease-out forwards;
+      pointer-events: none;
+	  border-bottom: 1px solid white;
+	  width: 600%;
+    }
+
+    @keyframes moveWord {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(var(--dir)); }
+    }
+	#handCursor {
+	  position: absolute;
+	  pointer-events: none;
+	  z-index: 999;
+	  width: 20px;
+	  height: 20px;
+	  transform: translate(-50%, -50%);
+	  background-color:#9e9e9ea1;
+	  border-radius: 50%;
+	}
+
+	.ripple {
+	  position: absolute;
+	  top: 50%;
+	  left: 50%;
+	  width: 10px;
+	  height: 10px;
+	  border: 0.6px solid yellow;
+	  border-radius: 50%;
+	  opacity: 0;
+	  transform: translate(-50%, -50%) scale(0.5);
+	  animation: rippleAnimation 0.6s ease-out forwards;
+	}
+
+	.ripple:nth-child(2) {
+	  animation-delay: 0.1s;
+	}
+	.ripple:nth-child(3) {
+	  animation-delay: 0.2s;
+	}
+
+	@keyframes rippleAnimation {
+	 0% {
+		opacity: 0;
+		transform: translate(-50%, -50%) scale(0.5);
+	  }
+	  50% {
+		opacity: 0.7;
+		transform: translate(-50%, -50%) scale(10);
+	  }
+	  100% {
+		opacity: 0;
+		transform: translate(-50%, -50%) scale(5);
+	  }
+	}
+  </style>
+</head>
+<body>
+	<div id="layer0">
+		<video id="videoBg"></video>
+	</div>
+	<div id="layer1"></div>
+	<div id="layer2">
+		<div class="top-text">Be CREATIVE!</div> 
+		<div class="top-sub-text">JOIN our Creative Coding Workshop</div>
+
+		<div class="bottom-text">Every Monday afternoon at TQ4.2 mail p.wels@fontys.nl || c.geene@fontys.nl</div>
+		<div class="bottom-sub-text">by welgeen.nl</div>
+	</div>
+	
+	<div id="bottom-logo"></div>
+	<div id="bottom-hand"></div>
+	<div id="handCursor">
+	  <div class="ripple"></div>
+	  <div class="ripple"></div>
+	  <div class="ripple"></div>
+	</div>
+	
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils"></script>
+
+  <script>
+
+    const layer = document.getElementById('layer1');
+    const words = [
+		  "Build the future with every line of code",
+		  "Where design meets data",
+		  "Pixels with purpose",
+		  "Code is the new craftsmanship",
+		  "Smart systems, smarter humans",
+		  "Scroll into innovation",
+		  "Logic meets imagination",
+		  "From prototype to paradigm shift",
+		  "Design systems, not just screens",
+		  "Information wants to be beautiful",
+		  "Interfaces with intent",
+		  "Black boxes, clear thinking",
+		  "Applied intelligence, designed impact",
+		  "Master the tech, shape the world",
+		  "Beyond the screen lies transformation"
+		];
+    const screenW = window.innerWidth;
+    const screenH = window.innerHeight;
+    const handCursor = document.getElementById('handCursor');
+  
+    function createSquare() {
+      const sizeVW = Math.random() * 5 + 1;
+      const size = (sizeVW / 50) * screenW;
+      const xOffset = screenW / 2 + (Math.random() * 0.2 - 0.1) * screenW;
+
+      const square = document.createElement('div');
+      square.className = 'square';
+      square.style.width = size + 'px';
+      square.style.height = size + 'px';
+      square.style.left = (xOffset - size / 2) + 'px';
+      square.style.top = '0px';
+
+      square.addEventListener('mouseenter', () => triggerWord(square));
+      square.dataset.hoverable = "true";
+
+      square.addEventListener('animationend', () => {
+        square.remove();
+        createSquare();
+      });
+
+      layer.appendChild(square);
+    }
+	
+function playRaindropSoundFrom90Percent() {
+  const audio = new Audio("dripping-water-nature-sounds-8050.mp3");
+
+  // Random startvolume tussen 0.2 en 1.0
+  const startVolume = Math.random() * 0.8 + 0.2;
+  audio.volume = startVolume;
+
+  // Wacht tot metadata geladen is
+  audio.addEventListener("loadedmetadata", () => {
+    const duration = audio.duration;
+    const fadeStart = duration * 0.98;
+    const fadeDuration = duration - fadeStart;
+
+    audio.currentTime = duration * 0.9;
+    audio.play();
+
+    // Start fade-out iets voor 98% van de totale duur
+    const checkFade = setInterval(() => {
+      if (audio.currentTime >= fadeStart) {
+        clearInterval(checkFade);
+
+        const fadeSteps = 20;
+        let step = 0;
+        const fadeInterval = fadeDuration / fadeSteps;
+
+        const fade = setInterval(() => {
+          step++;
+          audio.volume = startVolume * (1 - step / fadeSteps);
+          if (step >= fadeSteps) {
+            clearInterval(fade);
+            audio.volume = 0;
+          }
+        }, fadeInterval * 1000); // omrekenen naar milliseconden
+      }
+    }, 100);
+  });
+}
+
+
+
+
+	function setRandomFontStyle(word) {
+	  // Kies willekeurige font size uit een lijst
+	  const sizes = ['0.5vw', '1vw', '1vw', '2.4vw', '20vw', '70vw', '90vw'];
+	  const randomSize = sizes[Math.floor(Math.random() * sizes.length)];
+	  word.style.fontSize = randomSize;
+
+	  // Random spiegeling: normaal of gespiegeld
+	  const flip = Math.random() < 0.5 ? -1 : 1;
+
+	  // Random rotatie: -90 of 90 graden
+	  const rotation = Math.random() < 0.5 ? -90 : 90;
+
+	  // Combineer beide in transform
+	  word.style.transform = `scaleX(${flip}) rotate(${rotation}deg)`;
+
+	  // Random casing: upper of lower
+	  const text = word.textContent;
+	  word.textContent = Math.random() < 0.5 ? text.toUpperCase() : text.toLowerCase();
+	}
+
+
+	function createWord(square) {
+		const word = document.createElement('div');
+		word.className = 'word';
+		word.innerText = words[Math.floor(Math.random() * words.length)];
+		const direction = Math.random() > 0.5 ? '100vw' : '-100vw';
+		word.style.setProperty('--dir', direction);
+
+		setRandomFontStyle(word);
+		square.appendChild(word);
+		
+		word.addEventListener('animationend', () => {
+			word.remove();
+		});
+
+	}
+	
+	function animateRipple() {
+
+	  const ripples = handCursor.querySelectorAll('.ripple');
+
+	  ripples.forEach(ripple => {
+		ripple.style.animation = 'none';
+		// force reflow om animatie opnieuw te triggeren
+		void ripple.offsetWidth;
+		ripple.style.animation = '';
+		ripple.classList.add('ripple'); // heractiveer animatieklasse
+	  });
+	}
+
+	function triggerWord(square) {
+	  if (square.dataset.hoverable !== "true") return; // extra bescherming
+	  square.dataset.hoverable = "false";
+
+		createWord(square);
+		animateRipple();
+		playRaindropSoundFrom90Percent(); 
+		
+	}
+
+
+    for (let i = 0; i < 30; i++) {
+      setTimeout(createSquare, i * 400);
+    }
+
+    const handDetector = new Hands({ locateFile: file => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}` });
+    handDetector.setOptions({
+      maxNumHands: 1,
+      modelComplexity: 1,
+      minDetectionConfidence: 0.7,
+      minTrackingConfidence: 0.7
+    });
+	
+	const video = document.getElementById('videoBg');
+    const camera = new Camera(video, {
+      onFrame: async () => {
+        await handDetector.send({ image: video });
+      },
+      width: screenW,
+      height: screenH
+    });
+    camera.start();
+
+    handDetector.onResults(results => {
+      if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
+        const hand = results.multiHandLandmarks[0];
+        const middle = hand[9];
+
+		const x = (1 - middle.x) * screenW; // gespiegeld
+        const y = middle.y * screenH;
+
+        //console.log(`Handpositie: x=${x.toFixed(0)}, y=${y.toFixed(0)}`);
+		handCursor.style.display = "block";
+        handCursor.style.left = `${x}px`;
+        handCursor.style.top = `${y}px`;
+
+        const element = document.elementFromPoint(x, y);
+        if (element && element.classList.contains('square') && element.dataset.hoverable === "true") {
+          //console.log("Trigger via hand op square");
+          triggerWord(element);
+          element.dataset.hoverable = "false";
+        }
+      }else{
+		handCursor.style.display = "none";
+	  }
+    });
+  </script>
+</body>
+</html>

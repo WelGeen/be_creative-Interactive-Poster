@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vierkanten met Woorden</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body, html { width: 100vw; height: 100vh; overflow: hidden; background: black; }
+    #layer1 {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: black;
+    }
+    .square {
+      position: absolute;
+      background-color: white;
+    }
+    .word {
+      position: absolute;
+      color: white;
+      font-family: sans-serif;
+      animation: moveWord 3s ease-out forwards;
+      pointer-events: none;
+	  border-bottom: 1px solid white;
+    }
+    @keyframes moveWord {
+      0% { transform: translateX(0); opacity: 1; }
+      100% { transform: translateX(var(--dir)); opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+  <div id="layer1"></div>
+
+  <script>
+    const layer = document.getElementById('layer1');
+    const words = ["code", "design", "pixels", "layout", "square", "effect", "scroll", "black"];
+    const screenW = window.innerWidth;
+    const screenH = window.innerHeight;
+
+    let yOffset = 0;
+    const margin = 5;
+
+    function createNextSquare() {
+      if (yOffset > screenH) return;
+
+      const sizeVW = Math.random() * 5 + 1;
+      const size = (sizeVW / 100) * screenW;
+      const xOffset = screenW / 2 + (Math.random() * 0.2 - 0.1) * screenW; // +/- 10% vw vanuit midden
+
+      const square = document.createElement('div');
+      square.className = 'square';
+      square.style.width = size + 'px';
+      square.style.height = size + 'px';
+      square.style.left = (xOffset - size / 2) + 'px';
+      square.style.top = yOffset + 'px';
+
+      square.addEventListener('mouseenter', () => {
+        const word = document.createElement('div');
+        word.className = 'word';
+        word.innerText = words[Math.floor(Math.random() * words.length)];
+		const dir = screenW
+        const direction = Math.random() > 0.5 ? (dir*-1) +"px" : (dir+"px");
+        word.style.setProperty('--dir', direction);
+        word.style.left = square.style.left;
+        word.style.top = square.style.top;
+
+        layer.appendChild(word);
+
+        word.addEventListener('animationend', () => {
+          word.remove();
+        });
+      });
+
+      layer.appendChild(square);
+      yOffset += size + margin;
+
+      setTimeout(createNextSquare, 50); // kleine delay voor visueel effect
+    }
+
+    createNextSquare();
+  </script>
+</body>
+</html>

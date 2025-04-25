@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vierkanten met Woorden</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body, html { width: 100vw; height: 100vh; overflow: hidden; background: black; position: relative; }
+
+    #layer0 {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 0;
+    }
+
+    #videoBg {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: grayscale(100%) brightness(0.5);
+      transform: scaleX(-1);
+    }
+
+    #layer1 {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: black;
+      mix-blend-mode: overlay;
+      z-index: 1;
+    }
+
+    .square {
+      position: absolute;
+      background-color: white;
+      animation: dropSquare 10s linear forwards;
+    }
+
+    @keyframes dropSquare {
+      0% { transform: translateY(0); opacity: 1; }
+      100% { transform: translateY(100vh); opacity: 0; }
+    }
+
+    .word {
+      position: absolute;
+      color: white;
+      font-family: sans-serif;
+      animation: moveWord 1.5s ease-out forwards;
+      pointer-events: none;
+    }
+
+    @keyframes moveWord {
+      0% { transform: translateX(0); opacity: 1; }
+      100% { transform: translateX(var(--dir)); opacity: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div id="layer0">
+    <video id="videoBg" autoplay muted playsinline></video>
+  </div>
+  <div id="layer1"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils"></script>
+
+  <script>
+    const video = document.getElementById('videoBg');
+    navigator.mediaDevices.getUserMedia({ video: true })
+      .then(stream => {
+        video.srcObject = stream;
+      })
+      .catch(err => console.error("Camera toegang geweigerd:", err));
+
+    const layer = document.getElementById('layer1');
+    const words = ["code", "design", "pixels", "layout", "square", "effect", "scroll", "black"];
+    const screenW = window.innerWidth;
+    const screenH = window.innerHeight;
+
+    function createSquare() {
+      const sizeVW = Math.random() * 5 + 1;
+      const size = (sizeVW / 100) * screenW;
+      const xOffset = screenW / 2 + (Math.random() * 0.2 - 0.1) * screenW;
+
+      const square = document.createElement('div');
+      square.className = 'square';
+      square.style.width = size + 'px';
+      square.style.height = size + 'px';
+      square.style.left = (xOffset - size / 2) + 'px';
+      square.style.top = '0px';
+
+      square.addEventListener('mouseenter', () => triggerWord(square));
+      square.dataset.hoverable = "true";
+
+      square.addEventListener('animationend', () => {
+        square.remove();
+        createSquare();
+      });
+
+      layer.appendChild(square);
+    }
+
+    function triggerWord(square) {
+      const word = document.createElement('div');
+      word.className = 'word';
+      word.innerText = words[Math.floor(Math.random() * words.length)];
+
+      const direction = Math.random() > 0.5 ? '200px' : '-200px';
+      word.style.setProperty('--dir', direction);
+      word.style.left = square.style.left;
+      word.style.top = square.offsetTop + 'px';
+
+      layer.appendChild(word);
+
+      word.addEventListener('animationend', () => {
+        word.remove();
+      });
+    }
+
+    for (let i = 0; i < 5; i++) {
+      setTimeout(createSquare, i * 800);
+    }
+
+    const handDetector = new Hands({ locateFile: file => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}` });
+    handDetector.setOptions({
+      maxNumHands: 1,
+      modelComplexity: 1,
+      minDetectionConfidence: 0.7,
+      minTrackingConfidence: 0.7
+    });
+
+    const camera = new Camera(video, {
+      onFrame: async () => {
+        await handDetector.send({ image: video });
+      },
+      width: screenW,
+      height: screenH
+    });
+    camera.start();
+
+    handDetector.onResults(results => {
+      if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
+        const hand = results.multiHandLandmarks[0];
+        const middle = hand[9];
+
+        const x = middle.x * screenW;
+        const y = middle.y * screenH;
+
+        console.log(`Handpositie: x=${x.toFixed(0)}, y=${y.toFixed(0)}`);
+
+        const element = document.elementFromPoint(x, y);
+        if (element && element.classList.contains('square') && element.dataset.hoverable === "true") {
+          console.log("Trigger via hand op square");
+          triggerWord(element);
+          element.dataset.hoverable = "false";
+        }
+      }
+    });
+  </script>
+</body>
+</html>
