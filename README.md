@@ -15,6 +15,8 @@ We created this to explore how motion and interaction can attract attention — 
 
 ## 💻 Try it live
 
+▶️ [Watch demo video](https://raw.githubusercontent.com/WelGeen/be_creative-Interactive-Poster/main/WhatsApp%20Video%202025-04-25%20at%2016.01.28.mp4)
+
 **Best version (v2)**:  
 👉 [https://welgeen.nl/be_creative/v2](https://welgeen.nl/be_creative/v2)
 
@@ -34,6 +36,8 @@ Older version:
 This isn't just a fun demo — it's a **live invitation**. The poster is meant to catch attention and spark curiosity about our creative coding approach.
 
 We hope it inspires students to experiment, remix, cut and paste, and build something even better.
+
+
 
 ## 🛠️ Built with
 
