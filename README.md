@@ -1,7 +1,3 @@
-Natuurlijk! Hier is een eerste versie van een Engelse README voor je GitHub-repo, gebaseerd op je input — een mix van professioneel en uitnodigend, met een knipoog:
-
----
-
 # 🖐️ Welgeen Interactive Poster
 
 **By Pieter & Chris – [welgeen.nl](https://welgeen.nl)**  
