@@ -44,8 +44,4 @@ We hope it inspires students to experiment, remix, cut and paste, and build some
 ## ✂️ Remix it!
 
 Feel free to clone, break, remix and reimagine.  
-That's what creativity is all about.
-
----
-
-Zou je willen dat ik er ook een `index.html` of `js` bestand bij schrijf als voorbeeld?
+That's what creativity is all about:)
